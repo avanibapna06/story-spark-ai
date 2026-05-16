@@ -182,7 +182,7 @@ const ExploreComponent = () => {
             </div>
           </div>
 
-          <div className="flex-1 flex flex-col">
+          <div className="flex-1 flex flex-col min-h-[70vh]">
             <div className={`${featuredPost ? "mb-6" : ""}`}>
               <div className="flex justify-between items-center">
                 <div className="flex space-x-4 items-center justify-items-start overflow-x-auto">
@@ -249,21 +249,21 @@ const ExploreComponent = () => {
               </div>
             )}
 
-            <ExploreViewListComponent
-              posts={data?.posts || []}
-              isLoading={isLoading}
-            />
+            <div className="flex-grow">
+              <ExploreViewListComponent
+                posts={data?.posts || []}
+                isLoading={isLoading}
+              />
+            </div>
 
             {!featuredPost && data?.meta && (
-              <div className="sticky bottom-0 bg-gray-900/80 backdrop-blur-sm border-t border-gray-700 z-10 mt-4">
-                <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-1">
-                  <PaginationComponent
-                    current={page}
-                    pageSize={size}
-                    total={data.meta.total}
-                    onChange={onPaginationChange}
-                  />
-                </div>
+              <div className="sticky bottom-0 bg-gray-900/90 backdrop-blur-md border-t border-gray-800 z-10 mt-auto py-4">
+                <PaginationComponent
+                  current={page}
+                  pageSize={size}
+                  total={data.meta.total}
+                  onChange={onPaginationChange}
+                />
               </div>
             )}
           </div>
