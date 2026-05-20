@@ -1,150 +1,233 @@
-
 import { Link } from "react-router-dom";
 import logo from "../../assets/logoNew.png";
 
 const FooterComponent = () => {
-  return (
-    <div className="bg-black">
-      <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* Logo Section */}
-          <div>
-            <a
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
+  const platformLinks = [
+    { label: "About Us", to: "/about-us" },
+    { label: "Careers",  to: "/career"   },
+    { label: "Contact",  to: "/contact-us"},
+  ];
 
-                window.scrollTo({
-                  top: 0,
-                  behavior: "smooth",
-                });
-              }}
+  const resourceLinks = [
+    { label: "Blog",        to: "/blog"       },
+    { label: "Help Center", to: "/help"       },
+    { label: "Community",   to: "/community"  },
+    { label: "Guidelines",  to: "/guidelines" },
+  ];
+
+  return (
+    <footer className="relative w-full bg-gradient-to-b from-[#090F24] via-[#080E22] to-[#060A18] overflow-hidden">
+
+      {/* ─── Atmospheric ombré glow layers ─── */}
+      {/* Top-center wide royal blue radial — the main atmospheric light */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-0"
+        style={{
+          height: "380px",
+          background: `
+            radial-gradient(ellipse 75% 60% at 50% 0%,
+              rgba(56, 108, 220, 0.22) 0%,
+              rgba(79, 70, 229, 0.10) 45%,
+              transparent 80%
+            )
+          `,
+        }}
+      />
+      {/* Secondary softer indigo depth layer */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-0"
+        style={{
+          height: "240px",
+          background: `
+            radial-gradient(ellipse 50% 40% at 50% -5%,
+              rgba(99, 130, 255, 0.13) 0%,
+              rgba(79, 70, 229, 0.05) 50%,
+              transparent 80%
+            )
+          `,
+        }}
+      />
+      {/* Subtle newsletter region glow */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute right-[10%] top-[15%] w-[320px] h-[320px]"
+        style={{
+          background: `
+            radial-gradient(circle,
+              rgba(56, 108, 220, 0.08) 0%,
+              rgba(79, 70, 229, 0.03) 50%,
+              transparent 75%
+            )
+          `,
+          filter: "blur(40px)",
+        }}
+      />
+      {/* Hair-thin shimmer line at top border */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-0 h-px"
+        style={{
+          background:
+            "linear-gradient(90deg, transparent 0%, rgba(99,130,255,0.35) 35%, rgba(139,92,246,0.20) 65%, transparent 100%)",
+        }}
+      />
+
+      {/* ─── Main content ─── */}
+      <div className="relative z-10 max-w-[1450px] mx-auto px-8 lg:px-10 pt-14 pb-9">
+
+        {/* Top section grid */}
+        <div className="grid grid-cols-12 gap-x-6 gap-y-10 items-start">
+
+          {/* ── Brand (5 cols) ── */}
+          <div className="col-span-12 md:col-span-5 flex flex-col gap-5">
+            <Link
+              to="/"
+              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+              className="group inline-block w-fit"
             >
-              <img className="h-16" src={logo} alt="AIStoriesBook" />
-            </a>
-            <p className="mt-4 text-sm text-gray-400">
-              Empowering voices through the art of writing. Connect, create,
-              and inspire.
+              <img
+                src={logo}
+                alt="StorySparkAI"
+                className="h-[38px] w-auto object-contain brightness-100 transition-all duration-300 group-hover:brightness-110"
+              />
+            </Link>
+
+            {/* Ecosystem pill */}
+            <div className="inline-flex w-fit items-center gap-2 rounded-full border border-blue-500/20 bg-blue-600/[0.10] px-3.5 py-1 text-[11.5px] font-medium tracking-[0.12em] text-blue-300/90 uppercase shadow-[0_0_14px_rgba(59,130,246,0.06)]">
+              <span className="h-[5px] w-[5px] shrink-0 rounded-full bg-blue-400 animate-pulse" />
+              AI-powered storytelling ecosystem
+            </div>
+
+            {/* Description */}
+            <p className="text-[14.5px] leading-[1.75] text-slate-300/90 max-w-[330px]">
+              Empowering voices through the art of writing.
+              Connect, create, and inspire.
             </p>
           </div>
-          {/* Platform Section */}
-          <div>
-            <h3 className="text-sm font-semibold text-white tracking-wider uppercase">
+
+          {/* ── Platform (2 cols) ── */}
+          <div className="col-span-6 md:col-span-2 flex flex-col gap-4">
+            <h3 className="text-[11.5px] font-bold tracking-[0.22em] uppercase text-white/70">
               Platform
             </h3>
-
-            <ul className="mt-4 space-y-4">
-              <li>
-                <Link
-                  to="/about-us"
-                  className="text-base text-gray-400 hover:text-white transition-colors duration-200"
-                >
-                  About Us
-                </Link>
-              </li>
-
-              <li>
-                <Link
-                  to="/career"
-                  className="text-base text-gray-400 hover:text-white transition-colors duration-200"
-                >
-                  Careers
-                </Link>
-              </li>
-
-              <li>
-                <Link
-                  to="/contact-us"
-                  className="text-base text-gray-400 hover:text-white transition-colors duration-200"
-                >
-                  Contact
-                </Link>
-              </li>
+            <ul className="flex flex-col gap-[12.5px]">
+              {platformLinks.map(({ label, to }) => (
+                <li key={to}>
+                  <Link
+                    to={to}
+                    className="group relative inline-flex text-[14px] leading-none text-slate-300/85 transition-colors duration-200 hover:text-blue-300"
+                  >
+                    {label}
+                    <span className="absolute -bottom-0.5 left-0 h-px w-0 bg-blue-400/40 transition-all duration-300 ease-out group-hover:w-full" />
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
-          {/* Resources Section */}
-          <div>
-            <h3 className="text-sm font-semibold text-white tracking-wider uppercase">
+
+          {/* ── Resources (2 cols) ── */}
+          <div className="col-span-6 md:col-span-2 flex flex-col gap-4">
+            <h3 className="text-[11.5px] font-bold tracking-[0.22em] uppercase text-white/70">
               Resources
             </h3>
-
-            <ul className="mt-4 space-y-4">
-              <li>
-                <Link
-                  to="/blog"
-                  className="text-base text-gray-400 hover:text-white transition-colors duration-200"
-                >
-                  Blog
-                </Link>
-              </li>
-
-              <li>
-                <Link
-                  to="/help"
-                  className="text-base text-gray-400 hover:text-white transition-colors duration-200"
-                >
-                  Help Center
-                </Link>
-              </li>
-
-              <li>
-                <Link
-                  to="/community"
-                  className="text-base text-gray-400 hover:text-white transition-colors duration-200"
-                >
-                  Community
-                </Link>
-              </li>
-
-              <li>
-               <Link
-                 to="/guidelines"
-                className="text-base text-gray-400 hover:text-white transition-colors duration-200"
-            >
-                Guidelines
-               </Link>
-              </li>
+            <ul className="flex flex-col gap-[12.5px]">
+              {resourceLinks.map(({ label, to }) => (
+                <li key={to}>
+                  <Link
+                    to={to}
+                    className="group relative inline-flex text-[14px] leading-none text-slate-300/85 transition-colors duration-200 hover:text-blue-300"
+                  >
+                    {label}
+                    <span className="absolute -bottom-0.5 left-0 h-px w-0 bg-blue-400/40 transition-all duration-300 ease-out group-hover:w-full" />
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
-          {/* Newsletter Section */}
-          <div>
-            <h3 className="text-sm font-semibold text-white tracking-wider uppercase">
-              Newsletter
-            </h3>
 
-            <p className="mt-4 text-base text-gray-400">
-              Get the latest updates and news.
+          {/* ── Newsletter (3 cols) ── */}
+          <div className="col-span-12 md:col-span-3 flex flex-col gap-3.5">
+            <h3 className="text-[11.5px] font-bold tracking-[0.22em] uppercase text-white/70">
+              Stay Updated
+            </h3>
+            <p className="text-[13.5px] leading-[1.65] text-slate-300/80 max-w-[270px]">
+              Writing tips, product updates, and stories straight to your inbox.
             </p>
 
-            <form className="mt-4">
-              <div className="flex">
-                <input
-                  type="email"
-                  className="!rounded-button form-input block w-full bg-white border border-gray-300 rounded-l-md px-3 py-2 text-black"
-                  placeholder="Enter your email"
-                />
-
-                <button
-                  type="submit"
-                  className="!rounded-button -ml-px relative inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-r-md text-white bg-blue-600 hover:bg-indigo-700 transition-colors duration-200"
-                >
-                  Subscribe
-                </button>
-              </div>
+            {/* Inline email capsule */}
+            <form
+              onSubmit={(e) => e.preventDefault()}
+              className="group/form mt-0.5 flex items-center rounded-xl border border-white/[0.08] bg-[#0D1630]/60 p-1 backdrop-blur-sm transition-all duration-300 focus-within:border-blue-500/30 focus-within:shadow-[0_0_0_1px_rgba(59,130,246,0.08),0_0_16px_rgba(59,130,246,0.06)]"
+            >
+              <span className="shrink-0 pl-3 text-slate-500 text-[13px]">
+                <i className="fa-solid fa-envelope" aria-hidden="true" />
+              </span>
+              <input
+                type="email"
+                required
+                placeholder="you@storyspark.ai"
+                className="w-full min-w-0 bg-transparent pl-2.5 pr-1.5 py-2 text-[13px] text-white placeholder-slate-500 focus:outline-none"
+              />
+              <button
+                type="submit"
+                className="
+                  shrink-0 inline-flex items-center gap-1.5
+                  rounded-[9px] px-3.5 py-2
+                  bg-gradient-to-r from-blue-500 to-indigo-500
+                  text-[12px] font-semibold text-white tracking-wide
+                  shadow-[0_1px_14px_rgba(79,130,246,0.30)]
+                  hover:from-blue-400 hover:to-indigo-400
+                  hover:shadow-[0_2px_22px_rgba(79,130,246,0.42)]
+                  active:scale-95 transition-all duration-200 cursor-pointer
+                "
+              >
+                Subscribe
+                <i className="fa-solid fa-arrow-right text-[10px]" aria-hidden="true" />
+              </button>
             </form>
           </div>
         </div>
-        {/* Bottom Footer */}
-        <div className="mt-8 border-t border-gray-700 pt-8 flex items-center justify-between">
 
-          <p className="text-base text-gray-400">
-            &copy; 2025 StorySpark.AI - All rights reserved.
-          </p>
+        {/* ─── Divider ─── */}
+        <div
+          className="mt-12"
+          style={{
+            height: "1px",
+            background:
+              "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.07) 30%, rgba(255,255,255,0.07) 70%, transparent 100%)",
+          }}
+        />
 
-          
+        {/* ─── Bottom bar ─── */}
+        <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-[12px] text-slate-400/80">
+          <div className="flex flex-wrap items-center justify-center sm:justify-start gap-x-2.5 gap-y-1">
+            <span className="text-slate-400/80">
+              &copy; 2025 StorySparkAI. All rights reserved.
+            </span>
+            <span className="hidden sm:inline text-white/[0.12]">|</span>
+            <span className="italic text-slate-400/60">Crafted for storytellers</span>
+          </div>
+          <div className="flex items-center gap-2.5">
+            {["Privacy", "Terms", "Cookies"].map((item, i, arr) => (
+              <span key={item} className="flex items-center gap-2.5">
+                <a
+                  href="#"
+                  className="text-slate-400/80 transition-colors duration-200 hover:text-blue-300"
+                >
+                  {item}
+                </a>
+                {i < arr.length - 1 && (
+                  <span className="text-white/[0.12]">|</span>
+                )}
+              </span>
+            ))}
+          </div>
         </div>
+
       </div>
-    </div>
+    </footer>
   );
 };
 
