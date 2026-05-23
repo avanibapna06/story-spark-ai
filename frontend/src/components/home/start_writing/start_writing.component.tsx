@@ -23,7 +23,7 @@ const StartWritingComponent = () => {
               with our AI-powered platform.
             </p>
             <Link to="/stories">
-              <button className="!rounded-button inline-flex items-center justify-center bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-10 py-4 text-lg font-bold tracking-wide transition-all shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:scale-[1.02] active:scale-95 cursor-pointer">
+              <button className="rounded-full inline-flex items-center justify-center bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-10 py-4 text-lg font-bold tracking-wide transition-all shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:scale-[1.02] active:scale-95 cursor-pointer">
                 GET STARTED FREE
                 <i className="fa-solid fa-wand-magic-sparkles ml-3"></i>
               </button>

@@ -95,10 +95,10 @@ const PricingComponent = () => {
             )}
             <h3 className="text-xl font-semibold mb-2 text-gray-300">{plan.title}</h3>
             <div className="mb-4">
-              <span className="text-4xl font-bold text-gray-500">{plan.price}</span>
+              <span className="text-4xl font-bold text-gray-300">{plan.price}</span>
               <span className="text-gray-500">{plan.duration}</span>
             </div>
-            <ul className="space-y-3 mb-8">
+            <ul className="space-y-3 mb-8 text-gray-500">
               {plan.features.map((feature, i) => (
                 <li key={i} className="flex items-center">
                   <i className="fas fa-check text-green-500 mr-2"></i>

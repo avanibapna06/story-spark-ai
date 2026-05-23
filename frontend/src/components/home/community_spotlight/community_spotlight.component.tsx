@@ -2,17 +2,19 @@ import { useGetLatestListsQuery } from "../../../redux/apis/post.api";
 import { Post } from "../../../models/post";
 import LoadingAnimation from "../../loading/loading.component";
 import SSProfile from "../../ui-component/ss-profile/ss-profile";
-
-/*
- * Community Spotlight Section
- * ----------------------------
- * Displays recent top stories with author info, genre tags, and view count.
- * Uses the existing getLatestLists API endpoint.
- * No new backend changes are required.
- */
+import BookmarkButton from "../../BookmarkButton"; // Import the core bookmark module
+import { useNavigate } from "react-router-dom";
 
 const CommunitySpotlightComponent = () => {
   const { data, isLoading } = useGetLatestListsQuery(undefined);
+  const navigate = useNavigate();
+
+  // Dynamic reading calculation logic
+  const calculateReadingTime = (content: string): number => {
+    if (!content) return 1;
+    const words = content.trim().split(/\s+/).length;
+    return Math.max(1, Math.ceil(words / 200));
+  };
 
   if (isLoading) {
     return <LoadingAnimation />;
@@ -33,26 +35,48 @@ const CommunitySpotlightComponent = () => {
           data?.posts?.slice(0, 6).map((post: Post) => (
             <div
               key={post._id}
-              className="bg-blue-500/10 rounded-xl p-6 hover:bg-blue-500/20 transition-all duration-300"
+              onClick={() => navigate(`/post/${post._id}`)}
+              className="bg-blue-500/10 rounded-xl p-6 hover:bg-blue-500/20 transition-all duration-300 cursor-pointer flex flex-col justify-between"
             >
-              <div className="flex items-center mb-4">
-                <SSProfile name={post.author.name} size="h-9 w-9" />
-                <div className="ml-3">
-                  <p className="text-sm font-medium text-gray-300">
-                    {post.author.name}
-                  </p>
-                  <p className="text-xs text-gray-500">
-                    {new Date(post.publishedAt).toLocaleDateString()}
-                  </p>
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center">
+                    <SSProfile name={post.author.name} size="h-9 w-9" />
+                    <div className="ml-3">
+                      <p className="text-sm font-medium text-gray-300">
+                        {post.author.name}
+                      </p>
+                      <div className="flex items-center gap-1.5 mt-0.5">
+                        <p className="text-xs text-gray-500">
+                          {new Date(post.publishedAt).toLocaleDateString()}
+                        </p>
+                        <span className="text-gray-600 text-xs">•</span>
+                        {/* ⏱️ Dynamic Reading Time Badging */}
+                        <span className="text-xs text-purple-400 font-medium">
+                          ⏱️ {calculateReadingTime(post.content)} min read
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 🔖 Bookmark flag widget with redirection shield */}
+                  <div onClick={(e) => e.stopPropagation()} className="relative z-10">
+                    <BookmarkButton
+                      storyId={post._id}
+                      bookmarks={post.bookmarks}
+                      className="p-1.5 rounded-full hover:bg-slate-700/40 text-slate-400 hover:text-purple-400 transition-colors"
+                    />
+                  </div>
                 </div>
+                <h3 className="text-lg font-semibold text-gray-200 mb-2">
+                  {post.title}
+                </h3>
+                <p className="text-gray-400 text-sm mb-4 line-clamp-3">
+                  {post.content}
+                </p>
               </div>
-              <h3 className="text-lg font-semibold text-gray-200 mb-2">
-                {post.title}
-              </h3>
-              <p className="text-gray-400 text-sm mb-4">
-                {post.content}
-              </p>
-              <div className="flex items-center justify-between">
+
+              <div className="flex items-center justify-between mt-auto border-t border-slate-700/40 pt-4">
                 <div className="flex items-center text-xs text-gray-500 gap-3">
                   <span className="flex items-center gap-1">
                     <i className="far fa-eye"></i> {post.viewsCount}

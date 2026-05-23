@@ -4,6 +4,7 @@ import { formatDateShort } from "../../../utils/time-formate";
 import LoadingAnimation from "../../loading/loading.component";
 import SSProfile from "../../ui-component/ss-profile/ss-profile";
 import { useNavigate } from "react-router-dom";
+import BookmarkButton from "../../BookmarkButton"; // Import the core bookmark module
 
 import {
   FaTwitter,
@@ -12,10 +13,15 @@ import {
 } from "react-icons/fa";
 
 const FeatureComponent = () => {
-  const { data, isLoading } =
-    useGetFeaturedListsQuery(undefined);
-
+  const { data, isLoading } = useGetFeaturedListsQuery(undefined);
   const navigate = useNavigate();
+
+  // Dynamic reading calculation logic
+  const calculateReadingTime = (content: string): number => {
+    if (!content) return 1;
+    const words = content.trim().split(/\s+/).length;
+    return Math.max(1, Math.ceil(words / 200));
+  };
 
   if (isLoading) {
     return <LoadingAnimation />;
@@ -35,124 +41,101 @@ const FeatureComponent = () => {
             return (
               <div
                 key={post._id}
-                onClick={() =>
-                  navigate(`/post/${post._id}`)
-                }
-                className="h-full bg-blue-500/10 rounded-lg shadow-sm overflow-hidden border border-slate-700/40 cursor-pointer hover:bg-blue-500/20 transition-colors duration-200"
+                onClick={() => navigate(`/post/${post._id}`)}
+                className="h-full bg-blue-500/10 rounded-lg shadow-sm overflow-hidden border border-slate-700/40 cursor-pointer hover:bg-blue-500/20 transition-colors duration-200 flex flex-col group"
               >
-                <img
-                  className="h-48 w-full object-cover"
-                  src={post.imageURL}
-                  alt={post.title || "Featured Post"}
-                />
+                <div className="relative overflow-hidden h-48">
+                  <img
+                    className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    src={post.imageURL}
+                    alt={post.title || "Featured Post"}
+                  />
+                </div>
 
-                <div className="p-6">
-                  {/* Author */}
-                  <div className="flex items-center mb-3">
-                    <SSProfile
-                      name={
-                        post.author?.name ||
-                        "Unknown User"
-                      }
-                      size="h-8 w-8"
-                    />
+                <div className="p-6 flex-1 flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center">
+                        <SSProfile
+                          name={post.author?.name || "Unknown User"}
+                          size="h-8 w-8"
+                        />
+                        <div className="ml-4">
+                          <p className="text-sm font-medium text-gray-400">
+                            {post.author?.name || "Unknown User"}
+                          </p>
+                          <div className="flex items-center gap-2 mt-0.5">
+                            <p className="text-xs text-gray-500">
+                              {formatDateShort(post.createdAt)}
+                            </p>
+                            <span className="text-gray-600 text-xs">•</span>
+                            {/* ⏱️ Dynamic Reading Time Badging */}
+                            <p className="text-xs text-purple-400 font-medium">
+                              ⏱️ {calculateReadingTime(post.content)} min read
+                            </p>
+                          </div>
+                        </div>
+                      </div>
 
-                    <div className="ml-4">
-                      <p className="text-sm font-medium text-gray-400">
-                        {post.author?.name ||
-                          "Unknown User"}
-                      </p>
-
-                      <p className="text-xs text-gray-500">
-                        {formatDateShort(
-                          post.createdAt
-                        )}
-                      </p>
+                      {/* 🔖 Bookmark flag widget with redirection shield */}
+                      <div onClick={(e) => e.stopPropagation()} className="relative z-10">
+                        <BookmarkButton
+                          storyId={post._id}
+                          bookmarks={post.bookmarks}
+                          className="p-1.5 rounded-full hover:bg-slate-700/40 text-slate-400 hover:text-purple-400 transition-colors"
+                        />
+                      </div>
                     </div>
+
+                    <h3 className="text-xl font-semibold text-gray-300 mb-2 group-hover:text-blue-400 transition-colors">
+                      {post.title}
+                    </h3>
+
+                    <p className="text-gray-400 mb-4 line-clamp-2">
+                      {post.content || ""}
+                    </p>
                   </div>
 
-                  {/* Title */}
-                  <h3 className="text-xl font-semibold text-gray-300 mb-2">
-                    {post.title}
-                  </h3>
-
-                  {/* Content Preview */}
-                  <p className="text-gray-400 mb-4">
-                    {(post.content || "").slice(
-                      0,
-                      100
-                    )}
-                    ...
-                  </p>
-
-                  {/* Bottom Section */}
-                  <div className="flex items-center justify-between border-t border-slate-700 pt-4 text-sm text-gray-500">
-                    {/* Likes & Comments */}
+                  <div className="flex items-center justify-between border-t border-slate-700 pt-4 text-sm text-gray-500 mt-auto">
                     <div className="flex items-center">
                       <span className="flex items-center mr-4">
                         <i className="far fa-heart mr-1"></i>
                         {post.likesCount ?? 0}
                       </span>
-
                       <span className="flex items-center">
                         <i className="far fa-comment mr-1"></i>
                         {post.commentsCount ?? 0}
                       </span>
                     </div>
 
-                    {/* Share Buttons */}
                     <div className="flex items-center gap-4 text-gray-400">
-                      {/* Twitter/X */}
                       <a
-                        href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(
-                          postUrl
-                        )}&text=${encodeURIComponent(
-                          post.title || ""
-                        )}`}
+                        href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(postUrl)}&text=${encodeURIComponent(post.title || "")}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         title="Share on Twitter"
                         className="hover:text-sky-400 transition-colors duration-200"
-                        onClick={(e) =>
-                          e.stopPropagation()
-                        }
+                        onClick={(e) => e.stopPropagation()}
                       >
                         <FaTwitter size={16} />
                       </a>
 
-                      {/* LinkedIn */}
                       <a
-                        href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(
-                          postUrl
-                        )}`}
+                        href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(postUrl)}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         title="Share on LinkedIn"
                         className="hover:text-blue-500 transition-colors duration-200"
-                        onClick={(e) =>
-                          e.stopPropagation()
-                        }
+                        onClick={(e) => e.stopPropagation()}
                       >
                         <FaLinkedin size={16} />
                       </a>
 
-                      {/* Email */}
                       <a
-                        href={`mailto:?subject=${encodeURIComponent(
-                          post.title || ""
-                        )}&body=${encodeURIComponent(
-                          `${(
-                            post.content || ""
-                          ).slice(
-                            0,
-                            120
-                          )}...\n\nRead more: ${postUrl}`
-                        )}`}
+                        href={`mailto:?subject=${encodeURIComponent(post.title || "")}&body=${encodeURIComponent(`${(post.content || "").slice(0, 120)}...\n\nRead more: ${postUrl}`)}`}
                         title="Share via Email"
                         className="hover:text-red-400 transition-colors duration-200"
-                        onClick={(e) =>
-                          e.stopPropagation()
-                        }
+                        onClick={(e) => e.stopPropagation()}
                       >
                         <FaEnvelope size={16} />
                       </a>

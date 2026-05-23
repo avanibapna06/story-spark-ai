@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { getShortenedText, ITopicData, topicsData } from "./stories.utils";
+import { getShortenedText, ITopicData, topicsData, getWordCount } from "./stories.utils";
 import toast, { Toaster } from "react-hot-toast";
 import { useCreatePostMutation } from "../../redux/apis/post.api";
 import jsPDF from "jspdf";
+import BookmarkButton from "../BookmarkButton";
 
 export interface IStories {
   uuid: string;
@@ -27,9 +28,8 @@ const StoriesViewComponent: React.FC<StoriesComponentProps> = ({
   isLogin,
   setStories,
 }) => {
-  const [selectedStory, setSelectedStory] = useState<IStories | null>(
-    stories && stories[0]
-  );
+  // Start with a clean state that adapts dynamically
+  const [selectedStory, setSelectedStory] = useState<IStories | null>(null);
   const [topics, setTopics] = useState<ITopicData[]>(topicsData);
   const [selectTopics, setSelectTopics] = useState<ITopicData[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -40,11 +40,34 @@ const StoriesViewComponent: React.FC<StoriesComponentProps> = ({
     setSelectTopics(topics.filter((topic) => topic.selected));
   }, [topics]);
 
+  // Sync state instantly whenever a new template is submitted or selected
   useEffect(() => {
     if (stories && stories.length > 0) {
       setSelectedStory(stories[0]);
+    } else {
+      setSelectedStory(null);
     }
   }, [stories]);
+
+useEffect(() => {
+  const autoSaveStory = async () => {
+    if (!selectedStory) return;
+
+    const post: IPost = {
+      ...selectedStory,
+      topic: selectTopics,
+    };
+
+    try {
+      await createPost(post).unwrap();
+      toast.success("Story auto-saved!");
+    } catch (error) {
+      console.error("Auto-save failed", error);
+    }
+  };
+
+  autoSaveStory();
+}, [selectedStory, isLogin, selectTopics]);
 
   const handelStorySelection = (story: IStories) => {
     setSelectedStory(story);
@@ -55,43 +78,42 @@ const StoriesViewComponent: React.FC<StoriesComponentProps> = ({
     updatedTopics[index].selected = !updatedTopics[index].selected;
     setTopics(updatedTopics);
   };
-const handleCopyStory = async () => {
-  if (selectedStory?.content) {
-    await navigator.clipboard.writeText(selectedStory.content);
-    setIsCopied(true);
-    toast.success("Story copied!");
-    setTimeout(() => setIsCopied(false), 2000);
-       }
-    };
 
-const handleExportPDF = () => {
-  if (!selectedStory) {
-    toast.error("No story available to export.");
-    return;
-  }
+  const handleCopyStory = async () => {
+    if (selectedStory?.content) {
+      await navigator.clipboard.writeText(selectedStory.content);
+      setIsCopied(true);
+      toast.success("Story copied!");
+      setTimeout(() => setIsCopied(false), 2000);
+    }
+  };
 
-  try {
-    const doc = new jsPDF();
+  const handleExportPDF = () => {
+    if (!selectedStory) {
+      toast.error("No story available to export.");
+      return;
+    }
 
-    const title = selectedStory.title || "Story";
-    const content = selectedStory.content || "";
+    try {
+      const doc = new jsPDF();
+      const title = selectedStory.title || "Story";
+      const content = selectedStory.content || "";
 
-    doc.setFontSize(18);
-    doc.text(title, 15, 20);
+      doc.setFontSize(18);
+      doc.text(title, 15, 20);
 
-    doc.setFontSize(12);
+      doc.setFontSize(12);
+      const splitText = doc.splitTextToSize(content, 180);
+      doc.text(splitText, 15, 35);
 
-    const splitText = doc.splitTextToSize(content, 180);
-    doc.text(splitText, 15, 35);
+      doc.save(`${title}.pdf`);
+      toast.success("PDF downloaded!");
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to export PDF.");
+    }
+  };
 
-    doc.save(`${title}.pdf`);
-
-    toast.success("PDF downloaded!");
-  } catch (error) {
-    console.error(error);
-    toast.error("Failed to export PDF.");
-  }
-};
   const handelPublishStory = async () => {
     if (!isLogin) {
       toast.error("Please login to publish the story.");
@@ -120,16 +142,22 @@ const handleExportPDF = () => {
     }
   };
 
-  if (!stories || stories.length === 0) {
+  const calculateReadingTime = (content: string): number => {
+    const words = getWordCount(content);
+    return Math.max(1, Math.ceil(words / 200));
+  };
+
+  // If no generation has run yet, show the beautiful fallback wizard panel
+  if (!selectedStory) {
     return (
-      <div className="mt-16 px-4 sm:px-6 lg:px-8 pb-16 flex justify-center">
-        <div className="rounded-2xl border border-slate-700 bg-slate-800/40 p-8 sm:p-12 text-center text-slate-400 max-w-2xl w-full shadow-lg transition-all duration-500 ease-in-out mx-auto">
+      <div className="mt-16 px-4 sm:px-6 lg:px-8 pb-16 flex justify-center w-full">
+        <div className="rounded-2xl border border-slate-700 bg-slate-800/40 p-8 sm:p-12 text-center text-slate-400 max-w-2xl w-full shadow-lg transition-all duration-500 mx-auto">
           <div className="text-5xl mb-6 animate-pulse">✨</div>
           <h3 className="text-2xl font-bold text-slate-200 tracking-wide">
             Your AI-generated story will appear here
           </h3>
           <p className="mt-3 text-base text-slate-400">
-            Enter a creative prompt above and let StorySparkAI craft something magical.
+            Enter a creative prompt on the left and let StorySparkAI craft something magical.
           </p>
         </div>
       </div>
@@ -152,14 +180,14 @@ const handleExportPDF = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 animate-fade-in-up">
         <div className="col-span-1 lg:col-span-8 flex flex-col">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
-            <div className="">
+            <div>
               <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-300 to-blue-400">
                 {selectedStory?.title}
               </h1>
             </div>
             <div className="flex justify-start sm:justify-end">
               <div className="flex -space-x-5">
-                {stories && stories.length > 0 ? (
+                {stories && stories.length > 0 && (
                   stories.map((story) => (
                     <button
                       key={story.uuid}
@@ -167,7 +195,7 @@ const handleExportPDF = () => {
                         selectedStory?.uuid === story.uuid
                           ? "border-blue-500 scale-110"
                           : "border-white"
-                      } hover:scale-110 transition-transform duration-200 ease-in-out focus:outline-none focus:ring-1 focus:ring-offset-2 focus:ring-fuchsia-600`}
+                      } hover:scale-110 transition-transform duration-200 focus:outline-none`}
                       onClick={() => handelStorySelection(story)}
                     >
                       <img
@@ -177,17 +205,12 @@ const handleExportPDF = () => {
                       />
                     </button>
                   ))
-                ) : (
-                  <div className="text-gray-400">
-                    No stories available. Please generate some stories first.
-                  </div>
                 )}
               </div>
             </div>
           </div>
 
           <div className="bg-slate-800/80 backdrop-blur-xl border border-slate-700/50 p-8 rounded-2xl shadow-2xl relative overflow-hidden">
-            {/* Ambient AI Glow inside the story card */}
             <div className="absolute top-[-50px] right-[-50px] w-48 h-48 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
             <div className="absolute bottom-[-50px] left-[-50px] w-48 h-48 bg-purple-500/10 rounded-full blur-3xl pointer-events-none"></div>
             
@@ -196,30 +219,24 @@ const handleExportPDF = () => {
                 Generated Story
               </h3>
               <div className="flex items-center gap-2 relative z-10">
-                {selectedStory && (
-                  <>
-                    <button
-                      type="button"
-                      className="rounded-lg px-4 py-2 bg-slate-700 text-slate-200 font-semibold cursor-pointer hover:bg-slate-600 transition-colors"
-                      onClick={handleCopyStory}
-                    >
-                      {isCopied ? "✓ Copied" : "📋 Copy"}
-                    </button>
-                    <button
-                      type="button"
-                      className="rounded-lg px-4 py-2 bg-purple-700 text-slate-200 font-semibold cursor-pointer hover:bg-purple-600 transition-colors"
-                      onClick={handleExportPDF}
-                    >
-                      📄 Export PDF
-                    </button>
-                  </>
-                )}
+                <button
+                  type="button"
+                  className="rounded-lg px-4 py-2 bg-slate-700 text-slate-200 font-semibold cursor-pointer hover:bg-slate-600 transition-colors"
+                  onClick={handleCopyStory}
+                >
+                  {isCopied ? "✓ Copied" : "📋 Copy"}
+                </button>
+                <button
+                  type="button"
+                  className="rounded-lg px-4 py-2 bg-purple-700 text-slate-200 font-semibold cursor-pointer hover:bg-purple-600 transition-colors"
+                  onClick={handleExportPDF}
+                >
+                  📄 Export PDF
+                </button>
                 <button
                   type="button"
                   className={`rounded-lg px-5 py-2 font-semibold flex items-center space-x-2 cursor-pointer bg-blue-600 text-white transition-all duration-200 ${
-                    loading
-                      ? "opacity-50 cursor-not-allowed"
-                      : "hover:bg-blue-500 hover:shadow-lg hover:shadow-blue-500/25 active:scale-95"
+                    loading ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-500 hover:shadow-lg active:scale-95"
                   }`}
                   onClick={handelPublishStory}
                   disabled={loading}
@@ -229,11 +246,7 @@ const handleExportPDF = () => {
               </div>
             </div>
             <div id="story-content" className="prose prose-invert max-w-none text-slate-300 leading-relaxed tracking-wide relative z-10">
-              {selectedStory ? (
-                <p className="break-words">{selectedStory.content}</p>
-              ) : (
-                <p>No story available. Please generate a story first.</p>
-              )}
+              <p className="break-words">{selectedStory.content}</p>
             </div>
           </div>
           <div className="mt-7">
@@ -242,28 +255,16 @@ const handleExportPDF = () => {
                 Select Topics
               </h3>
               <div className="flex flex-wrap gap-2">
-                {selectedStory ? (
-                  <>
-                    {topics.map((topic, index) => (
-                      <span
-                        key={index}
-                        className={`px-4 py-1.5 ${topic.color} rounded-full text-sm font-medium transition-transform hover:scale-105 cursor-pointer shadow-sm`}
-                        onClick={() => handleTopicClick(index)}
-                      >
-                        {topic.selected ? (
-                          <i className="fa-solid fa-check"></i>
-                        ) : (
-                          <i className="fa-solid fa-plus"></i>
-                        )}{" "}
-                        {topic.title}
-                      </span>
-                    ))}
-                  </>
-                ) : (
-                  <p className="text-gray-400">
-                    No topics available. Please generate a story first.
-                  </p>
-                )}
+                {topics.map((topic, index) => (
+                  <span
+                    key={index}
+                    className={`px-4 py-1.5 ${topic.color} rounded-full text-sm font-medium transition-transform hover:scale-105 cursor-pointer shadow-sm`}
+                    onClick={() => handleTopicClick(index)}
+                  >
+                    {topic.selected ? <i className="fa-solid fa-check"></i> : <i className="fa-solid fa-plus"></i>}{" "}
+                    {topic.title}
+                  </span>
+                ))}
               </div>
             </div>
           </div>
@@ -276,32 +277,36 @@ const handleExportPDF = () => {
             </h1>
           </div>
           <div className="bg-slate-800/60 backdrop-blur-xl border border-slate-700/50 rounded-2xl shadow-2xl overflow-hidden group">
-            {selectedStory ? (
-              <div className="relative flex flex-col rounded-lg">
-                <div className="relative m-3 overflow-hidden text-white rounded-xl">
-                  <img
-                    src={selectedStory.imageURL}
-                    alt="card-image"
-                    className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                </div>
-                <div className="px-3 py-1">
-                  <div className="mb-2 inline-flex items-center rounded-full bg-purple-600 py-1 px-3 text-xs font-semibold text-white shadow-sm">
-                   {selectedStory.tag.toUpperCase()}
+            <div className="relative flex flex-col rounded-lg">
+              <div className="relative m-3 overflow-hidden text-white rounded-xl">
+                <img
+                  src={selectedStory.imageURL}
+                  alt="card-image"
+                  className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+              </div>
+              <div className="px-3 py-1">
+                <div className="flex justify-between items-center mb-2 w-full">
+                  <div className="flex items-center gap-2">
+                    <div className="inline-flex items-center rounded-full bg-purple-600 py-1 px-3 text-xs font-semibold text-white shadow-sm">
+                      {selectedStory.tag.toUpperCase()}
+                    </div>
+                    <div className="inline-flex items-center rounded-full bg-slate-700 py-1 px-2.5 text-xs font-medium text-slate-300 shadow-sm gap-1">
+                      ⏱️ {calculateReadingTime(selectedStory.content)} min read
+                    </div>
                   </div>
-                  <h6 className="mb-1 text-gray-300 text-xl font-semibold">
-                    {selectedStory.title}
-                  </h6>
-                  <p className="text-gray-400 font-light breakwords text-sm sm:text-base">
-                    {getShortenedText(selectedStory.content)}
-                  </p>
+                  <div>
+                    <BookmarkButton storyId={selectedStory.uuid} />
+                  </div>
                 </div>
+                <h6 className="mb-1 text-gray-300 text-xl font-semibold">
+                  {selectedStory.title}
+                </h6>
+                <p className="text-gray-400 font-light breakwords text-sm sm:text-base">
+                  {getShortenedText(selectedStory.content)}
+                </p>
               </div>
-            ) : (
-              <div className="p-6 text-center text-gray-400">
-                No story available. Please generate a story first.
-              </div>
-            )}
+            </div>
           </div>
         </div>
       </div>
