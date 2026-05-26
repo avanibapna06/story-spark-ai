@@ -6,12 +6,12 @@ import { useGetProfileInfoQuery } from "../../redux/apis/user.api";
 import jsPDF from "jspdf";
 import BookmarkButton from "../BookmarkButton";
 import logo from "../../assets/logoNew.png";
+import StoryGeneratingAnimation from "../loading/story-generating-animation.component";
+
 import {
   useGenerateAlternateEndingsMutation,
   useGenerateFreeAlternateEndingsMutation,
 } from "../../redux/apis/ai.model.api";
-
-
 export interface IStories {
   uuid: string;
   title: string;
@@ -28,12 +28,14 @@ interface StoriesComponentProps {
   stories: IStories[];
   isLogin: boolean;
   setStories: (stories: IStories[]) => void;
+  isLoading?: boolean;
 }
 
 const StoriesViewComponent: React.FC<StoriesComponentProps> = ({
   stories,
   isLogin,
   setStories,
+  isLoading,
 }) => {
   // Start with a clean state that adapts dynamically
   const [selectedStory, setSelectedStory] = useState<IStories | null>(null);
@@ -536,7 +538,13 @@ ${content}
     return Math.max(1, Math.ceil(words / 200));
   };
 
-  // If no generation has run yet, don't render the story sections at all.
+if (isLoading) {
+  return (
+    <div className="flex items-center justify-center py-20">
+      <StoryGeneratingAnimation />
+    </div>
+  );
+}
   if (!selectedStory) {
     return null;
   }
