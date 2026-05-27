@@ -21,7 +21,11 @@ const LoginComponent = () => {
   const [loginUser] = useLoginUserMutation();
   const [googleLogin] = useGoogleLoginMutation();
 
-  const { register, handleSubmit } = useForm<Inputs>();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<Inputs>({ mode: "onChange" });
 
   const [isBusy, setIsBusy] = useState<boolean>(false);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
@@ -41,9 +45,7 @@ const LoginComponent = () => {
 
         setIsLoggedIn(true);
       }
-    } catch (err: unknown) {
-      console.log("error: ", err);
-
+    } catch {
       toast.error(
         "Login failed. Please check your credentials."
       );
@@ -73,9 +75,7 @@ const LoginComponent = () => {
 
         setIsLoggedIn(true);
       }
-    } catch (err: unknown) {
-      console.log("Google login error: ", err);
-
+    } catch {
       toast.error(
         "Failed to login with Google. Please try again."
       );
@@ -85,8 +85,6 @@ const LoginComponent = () => {
   };
 
   const handleGoogleLoginError = () => {
-    console.log("Login Failed");
-
     toast.error(
       "Google login failed. Please try again."
     );
@@ -153,6 +151,8 @@ const LoginComponent = () => {
               required={true}
               icon="fas fa-envelope"
               register={register}
+              validation={{ required: "Email is required" }}
+              error={errors.email}
             />
 
             <SSInput
@@ -163,7 +163,18 @@ const LoginComponent = () => {
               required={true}
               icon="fas fa-lock"
               register={register}
+              validation={{ required: "Password is required" }}
+              error={errors.password}
             />
+
+            <div className="flex justify-end -mt-2">
+              <a
+                href="/forgot-password"
+                className="text-xs font-semibold text-blue-400 hover:text-blue-300 transition-colors duration-200"
+              >
+                Forgot Password?
+              </a>
+            </div>
 
             <SSButton
               text="Sign In"

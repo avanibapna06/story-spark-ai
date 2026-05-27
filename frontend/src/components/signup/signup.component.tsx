@@ -163,7 +163,6 @@ const SignUpComponent = () => {
             ?.message ||
           "Failed to send OTP. Check backend .env email credentials.";
         toast.error(message);
-        console.log("error: ", error);
       } finally {
         setIsBusy(false);
       }
@@ -210,7 +209,6 @@ const SignUpComponent = () => {
         (err as { data?: Array<{ message?: string }> })?.data?.[0]?.message ||
         "OTP verification failed. Please check the code and try again.";
       toast.error(message);
-      console.log("error: ", err);
     } finally {
       setIsBusy(false);
     }
@@ -241,7 +239,6 @@ const SignUpComponent = () => {
         (error as { data?: Array<{ message?: string }> })?.data?.[0]
           ?.message || "Failed to resend OTP. Please try again.";
       toast.error(message);
-      console.log("resend error: ", error);
     } finally {
       setIsBusy(false);
     }
@@ -316,6 +313,13 @@ const SignUpComponent = () => {
                 required={true}
                 icon="fas fa-envelope"
                 register={register}
+                validation={{
+                  required: "Email is required",
+                  pattern: {
+                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                    message: "Please enter a valid email address",
+                  },
+                }}
                 error={errors.email}
               />
 
@@ -327,6 +331,13 @@ const SignUpComponent = () => {
                 required={true}
                 icon="fas fa-lock"
                 register={register}
+                validation={{
+                  required: "Password is required",
+                  minLength: {
+                    value: 8,
+                    message: "Password must be at least 8 characters",
+                  },
+                }}
                 error={errors.password}
               />
 
@@ -376,6 +387,11 @@ const SignUpComponent = () => {
                 required={true}
                 icon="fas fa-eye"
                 register={register}
+                validation={{
+                  required: "Please confirm your password",
+                  validate: (value: string) =>
+                    value === password || "Passwords do not match",
+                }}
                 error={errors.confirmPassword}
               />
 
@@ -390,6 +406,22 @@ const SignUpComponent = () => {
                 required={true}
                 icon="fas fa-key"
                 register={register}
+                validation={{
+                  required: "Please enter OTP",
+                  minLength: {
+                    value: 6,
+                    message: "OTP must be 6 digits",
+                  },
+                  maxLength: {
+                    value: 6,
+                    message: "OTP must be 6 digits",
+                  },
+                  pattern: {
+                    value: /^[0-9]{6}$/,
+                    message: "OTP must contain only numbers",
+                  },
+                }}
+                error={errors.otp}
               />
 
               <SSButton

@@ -1,5 +1,5 @@
+import React from "react";
 import StoryInspirationWrapper from "./components/StoryInspirationWrapper";
-import { JSX } from "react";
 import WritingAssistantComponent from "./components/writing-assistant/writing_assistant.component";
 import CollabHome from "./components/collab/CollabHome";
 import CollabRoom from "./components/collab/CollabRoom";
@@ -16,11 +16,11 @@ import HeroSectionComponent from "./components/hero/hero_section.component";
 import HomeComponent from "./components/home/home.component";
 import LoginComponent from "./components/login/login.component";
 import SignUpComponent from "./components/signup/signup.component";
+import ForgotPasswordComponent from "./components/login/forgot_password.component";
 import DashboardComponent from "./components/dashboard/dashboard.component";
 import RootLayout from "./components/layout/root_layout.component";
 import DashboardLayout from "./components/dashboard/dashboard_layout.component";
 import SettingComponent from "./components/dashboard/settings/settings.component";
-import StoriesComponent from "./components/stories/stories.component";
 import WriterApplicationComponent from "./components/dashboard/writers/writer_application.component";
 import UserComponent from "./components/dashboard/users/user.component";
 import PricingComponent from "./components/pricing/pricing.component";
@@ -36,7 +36,6 @@ import ProfileComponent from "./components/dashboard/profile/profile.component";
 import PaymentComponent from "./components/home/pricing/payment.component";
 import Contact from "./components/contactus/contactus";
 import HelpCenterComponent from "./components/help_center/help_center.component";
-import AnalyticsPage from "./components/dashboard/analytics/analytics.page";
 import AboutUsComponent from "./components/footer/about-us.tsx";
 import CareerComponent from "./components/footer/career.tsx";
 import BlogComponent from "./components/footer/blog.tsx";
@@ -49,26 +48,32 @@ import ResourcesListComponent from "./components/community/resources_list.compon
 import ResourceDetailComponent from "./components/community/resource_detail.component";
 import MagicCursorComponent from "./components/magic-cursor/magic_cursor.component";
 import ContributorsComponent from "./components/footer/contributors";
+import BranchingStory from "./components/stories/BranchingStory";
+import ReportBug from "./components/report-bug/ReportBug";
+import AnalyticsPage from "./components/dashboard/analytics/analytics.page";
 
 // =========================================================================
-// 1. REFACTORED PROTECTED ROUTE LAYER (Acts as a Layout Gate using <Outlet />)
+// PROTECTED ROUTE — supports both wrapper pattern (element prop) and
+// layout-gate pattern (Outlet, no element prop)
 // =========================================================================
-const ProtectedRoute = ({
-  allowedRoles,
-}: {
+type ProtectedRouteProps = {
   allowedRoles: string[];
-}) => {
+  element?: React.ReactElement;
+};
+
+const ProtectedRoute = ({ allowedRoles, element }: ProtectedRouteProps) => {
   const user = getUserInfo();
-  
+
   if (!user) {
     return <Navigate to="/login" replace />;
   }
   if (!allowedRoles.includes(user.role)) {
     return <Navigate to="/" replace />;
   }
-  
-  // Dynamically renders the active nested matching sub-child route
-  return <Outlet />;
+
+  // If an element was passed, render it directly (wrapper pattern)
+  // Otherwise render <Outlet /> for nested route layout-gate pattern
+  return element ? element : <Outlet />;
 };
 // =========================================================================
 // 2. CENTRAL ROUTER MATRIX (Initialized exactly once in the global scope)
@@ -92,7 +97,7 @@ const router = createBrowserRouter([
       { path: "templates", element: <TemplatesComponent /> },
       { path: "writing-assistant", element: <WritingAssistantComponent /> },
       { path: "story-inspiration", element: <StoryInspirationWrapper /> },
-      { path: "stories", element: <StoriesComponent /> },
+      { path: "stories", element: <BranchingStory /> },
       { path: "login", element: <LoginComponent /> },
       { path: "signup", element: <SignUpComponent /> },
       { path: "pricing", element: <PricingComponent /> },
@@ -107,6 +112,7 @@ const router = createBrowserRouter([
       { path: "help-center", element: <HelpCenterComponent /> },
       { path: "guidelines", element: <GuidelinesComponent /> },
       { path: "contributors", element: <ContributorsComponent /> },
+      { path: "report-bug", element: <ReportBug /> },
 
       // Protected Sub-Tree running under the RootLayout context
       {
@@ -156,7 +162,7 @@ const router = createBrowserRouter([
 ]);
 
 // =========================================================================
-// 3. TARGET RUNTIME PROVIDER ENGINES
+// APP
 // =========================================================================
 function App() {
   return (
