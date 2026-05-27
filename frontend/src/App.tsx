@@ -41,7 +41,7 @@ import HelpCenterComponent from "./components/help_center/help_center.component"
 import AnalyticsPage from "./components/dashboard/analytics/analytics.page";
 import AboutUsComponent from "./components/footer/about-us.tsx";
 import CareerComponent from "./components/footer/career.tsx";
-// import ContactUsComponent from "./components/footer/contact-us.tsx";
+import ContactUs from "./components/footer/contact-us.tsx";
 import BlogComponent from "./components/footer/blog.tsx";
 import PrivacyPolicy from "./components/footer/Privacy.tsx";
 import Terms from "./components/footer/terms.tsx";
@@ -476,7 +476,7 @@ function App() {
         <Route path="/post/:id" element={<PostDetailsComponent />} />
         <Route path="/about-us" element={<AboutUsComponent />} />
         <Route path="/career" element={<CareerComponent />} />
-        <Route path="/contact-us" element={<ContactUsComponent />} />
+        <Route path="/contact-us" element={<ContactUs />} />
         <Route path="/blog" element={<BlogComponent />} />
         <Route path="/help-center" element={<HelpCenterComponent />} />
         <Route path="/guidelines" element={<GuidelinesComponent />} />
