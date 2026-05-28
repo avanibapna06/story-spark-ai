@@ -290,6 +290,7 @@ const SignUpComponent = () => {
                 required={true}
                 icon="fas fa-user"
                 register={register}
+                autoComplete="name"
                 validation={{
                   required: "Name is required",
                 minLength: {
@@ -313,13 +314,7 @@ const SignUpComponent = () => {
                 required={true}
                 icon="fas fa-envelope"
                 register={register}
-                validation={{
-                  required: "Email is required",
-                  pattern: {
-                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                    message: "Please enter a valid email address",
-                  },
-                }}
+                autoComplete="email"
                 error={errors.email}
               />
 
@@ -331,13 +326,7 @@ const SignUpComponent = () => {
                 required={true}
                 icon="fas fa-lock"
                 register={register}
-                validation={{
-                  required: "Password is required",
-                  minLength: {
-                    value: 8,
-                    message: "Password must be at least 8 characters",
-                  },
-                }}
+                autoComplete="new-password"
                 error={errors.password}
               />
 
@@ -389,11 +378,7 @@ const SignUpComponent = () => {
                 required={true}
                 icon="fas fa-eye"
                 register={register}
-                validation={{
-                  required: "Please confirm your password",
-                  validate: (value: string) =>
-                    value === password || "Passwords do not match",
-                }}
+                autoComplete="new-password"
                 error={errors.confirmPassword}
               />
 
