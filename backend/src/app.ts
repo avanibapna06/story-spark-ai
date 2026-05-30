@@ -1,3 +1,5 @@
+import helmet from "helmet";
+import rateLimit from "express-rate-limit";
 import express, { Application, NextFunction, Request, Response } from "express";
 import cors from "cors";
 import httpStatus from "http-status";
@@ -10,8 +12,17 @@ import { User } from "./app/modules/user/user.model";
 import { NewsletterSubscriber } from "./app/modules/newsletter/newsletter.model";
 import storyRoutes from "./routes/story.routes";
 const app: Application = express();
-
 app.set("trust proxy", 1); // Trust first proxy to securely read req.ip
+app.use(helmet());
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  message: "Too many requests, please try again later."
+});
+
+app.use(limiter);
+
+
 
 const defaultCorsOrigins = [
   "http://localhost:4001",
