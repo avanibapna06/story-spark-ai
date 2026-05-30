@@ -12,20 +12,20 @@ export const continueStory = async (
   const response = await apiClient.post(
     `${getBaseUrl()}/story-continuation/continue`,
     {
-      prompt: `                                                 
+      prompt: `
 Continue this story naturally.
 
 Rules:
-- Maintain character consistency                            
+- Maintain character consistency
 - Keep emotional tone
 - Avoid repetition
 - Continue the narrative smoothly
 
 Story:
 ${previousContent}
-      `,                
+      `,
     }
   );
 
   return response.data.text;
-};                                                              
+};
