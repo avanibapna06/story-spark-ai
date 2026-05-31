@@ -96,7 +96,7 @@ export default function CommunityCardsPreview() {
                 {genre.icon}
               </div>
 
-              <div className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold tracking-wide uppercase bg-blue-500/10 text-blue-400 border border-blue-500/20 mb-5">
+              <div className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold tracking-wide uppercase bg-blue-500/10 text-blue-600 border border-blue-500/20 mb-5 dark:text-blue-400">
                 {genre.category}
               </div>
 
