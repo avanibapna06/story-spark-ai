@@ -6,9 +6,11 @@ import { Reaction } from "./reaction.model";
 import { Types } from "mongoose";
 import { Post } from "../post/post.model";
 
+type ReactionType = "like" | "love" | "laugh" | "angry" | "sad";
+
 const toggleReaction = async (
   postId: string,
-  type: string = "like",
+  type: ReactionType = "like",
   token: ITokenPayload
 ) => {
   const { email } = token;
@@ -20,16 +22,33 @@ const toggleReaction = async (
   if (!post) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Post not found!");
   }
+  // check existing reaction by this user for the post
+  const existing = await Reaction.findOne({
+    postId: new Types.ObjectId(postId),
+    userId: user._id,
+  });
 
- main
-    const newReaction = await Reaction.create({
-      postId: new Types.ObjectId(postId),
-      userId: user._id,
-      type: type,
-    });
- main
-    };
+  if (existing) {
+    if (existing.type === type) {
+      // toggle off (remove reaction)
+      await Reaction.deleteOne({ _id: existing._id });
+      return { removed: true };
+    } else {
+      // change reaction type
+      existing.type = type;
+      await existing.save();
+      return { updated: true, type };
+    }
   }
+
+  // create new reaction
+  const newReaction = await Reaction.create({
+    postId: new Types.ObjectId(postId),
+    userId: user._id,
+    type: type,
+  });
+
+  return newReaction;
 };
 
 export const ReactionService = {

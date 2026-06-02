@@ -18,7 +18,8 @@ export default function CollabHome() {
 
     try {
       setIsCreating(true);
-      const socket = connectSocket();
+      connectSocket();
+      const socket = getSocketIo();
       if (!socket) {
         setError(
           "Socket.IO connection failed. Please check VITE_SOCKET_URL in frontend/.env"
@@ -26,9 +27,7 @@ export default function CollabHome() {
         return;
       }
 
-      const collabSocket = socket.io.of("/collab");
-
-      collabSocket.emit(
+      socket.emit(
         "collab:create_room",
         { userId: user?.userId, username: user?.name },
         (response: any) => {
