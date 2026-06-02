@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef, useMemo } from "react";
+import DOMPurify from "dompurify";
 import { getShortenedText, ITopicData, topicsData, getWordCount, SELECTED_TOPIC_CLASSES } from "./stories.utils";
 import toast, { Toaster } from "react-hot-toast";
 import { useCreatePostMutation, useDeletePostMutation } from "../../redux/apis/post.api";
@@ -791,12 +792,12 @@ if (isLoading) {
                             : undefined
                         }
                       >
-                        {segment.text}
+                        {DOMPurify.sanitize(segment.text)}
                       </span>
                     );
                   })
                 ) : (
-                  selectedStory.content
+                  DOMPurify.sanitize(selectedStory.content)
                 )}
               </p>
             </div>
