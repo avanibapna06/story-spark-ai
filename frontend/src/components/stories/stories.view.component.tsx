@@ -15,6 +15,7 @@ import {
   useGenerateFreeAlternateEndingsMutation,
 } from "../../redux/apis/ai.model.api";
 import ImageFallback from "../ImageFallback";
+import GeneratedStoryTimeline from "./GeneratedStoryTimeline";
 export interface IStories {
   uuid: string;
   title: string;
@@ -1097,6 +1098,13 @@ if (isLoading) {
         </div>
 
         <div className="col-span-1 lg:col-span-4">
+          <GeneratedStoryTimeline
+            content={selectedStory.content}
+            title={selectedStory.title}
+            narrationState={narrationState}
+            narrationWordIndex={narrationWordIndex}
+          />
+
           <div className="mb-5">
             <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-300 to-blue-400">
               Preview
