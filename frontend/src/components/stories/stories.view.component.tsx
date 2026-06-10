@@ -1905,14 +1905,28 @@ ${content}
   }
 
   if (!stories || !stories.length || !selectedStory) {
-    return (
-      <div className="w-full text-center text-slate-400 dark:text-slate-500 py-16">
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-white/[0.02] border border-slate-200 dark:border-white/5 text-sm font-medium">
-          No stories generated yet. Start by entering a prompt ✨
-        </div>
+  return (
+    <div className="w-full flex flex-col items-center justify-center py-24 px-4 text-center">
+      <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-indigo-500/10 to-purple-500/10 border border-indigo-500/20 flex items-center justify-center mb-6 select-none">
+        <svg className="w-10 h-10 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+        </svg>
       </div>
-    );
-  }
+      <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white mb-3 tracking-tight">
+        No stories yet!
+      </h2>
+      <p className="text-sm sm:text-base text-slate-500 dark:text-slate-400 max-w-sm leading-relaxed mb-8 font-medium">
+        Your story library is empty. Enter a prompt above and let AI spark your imagination.
+      </p>
+      <a href="#prompt-input">
+        <button className="px-6 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-sm font-bold shadow-md shadow-blue-500/10 hover:scale-[1.02] active:scale-[0.98] transition-all duration-150 flex items-center gap-2.5 cursor-pointer uppercase tracking-wider">
+          <i className="fa fa-wand-magic-sparkles text-sm"></i>
+          <span>Generate Your First Story</span>
+        </button>
+      </a>
+    </div>
+  );
+}
 
   return (
     <div className="w-full min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-300 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto pt-8 pb-16 relative overflow-hidden box-border">
@@ -1968,7 +1982,7 @@ ${content}
             {/* Story selector thumbnails */}
             <div className="flex justify-start sm:justify-end shrink-0 select-none mt-4 sm:mt-0">
               <div className="flex -space-x-4">
-                {stories.map((story) => (
+  {stories.map((story) => (
                   <button
                     key={story.uuid}
                     className={`relative w-12 h-12 sm:w-14 sm:h-14 rounded-full border-2 ${
