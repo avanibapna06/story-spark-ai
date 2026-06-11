@@ -8,6 +8,7 @@ import BookmarkButton from "../../BookmarkButton";
 import React, { useState } from "react";
 import { FaLinkedin, FaEnvelope, FaLink } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
+import { SkeletonGrid } from "../../cards/SkeletonCard";
 
 const FeatureComponent = () => {
   const { data, isLoading, isError } = useGetFeaturedListsQuery(undefined);
@@ -29,7 +30,14 @@ const FeatureComponent = () => {
   };
 
   if (isLoading) {
-    return <LoadingAnimation />;
+    return (
+      <section className="w-full box-border mb-12">
+        <h2 className="mb-6 text-xl sm:text-2xl font-extrabold tracking-tight select-none text-slate-900 dark:text-slate-100">
+          Featured Posts
+        </h2>
+        <SkeletonGrid count={4} variant="home-featured" />
+      </section>
+    );
   }
 
   if (isError) {

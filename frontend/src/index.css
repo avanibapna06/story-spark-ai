@@ -1355,3 +1355,22 @@ html.dark .contact-input::placeholder { color: rgba(148, 163, 184, 0.78); }
   transform: none;
 }
 
+/* ==========================================================================
+   Skeleton Shimmer Animation
+   ========================================================================== */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--skeleton-base) 25%,
+    var(--skeleton-shine) 50%,
+    var(--skeleton-base) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite ease-in-out;
+}
+
