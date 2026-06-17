@@ -384,9 +384,7 @@ VITE_GOOGLE_CLIENT_ID=your-google-client-id
 
 
 
-
-<a id="troubleshooting"></a>
-
+<a id="contributing"></a>
 ## Troubleshooting 🛠️
 
 Running into issues during setup? Here are the most common errors and how to fix them.
@@ -456,8 +454,8 @@ git commit -m "chore: regenerate package-lock.json"
 
 ---
 
-> 💡 **Still stuck?** Open an issue or check existing ones — your problem may already have a solution!
-<a id="contributing"></a>
+> > 💡 **Still stuck?** Open an issue or check existing ones — your problem may already have a solution!
+
 ## Contributing 👨‍💻
 
 Contributions make the open source community such an amazing place to learn, inspire, and create. <br>
