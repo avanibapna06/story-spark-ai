@@ -41,6 +41,9 @@ app.use(
   cors({
     origin: (origin, callback) => {
       if (!origin) {
+        if (process.env.NODE_ENV === "production") {
+          return callback(new Error("Origin header required"));
+        }
         return callback(null, true);
       }
 
