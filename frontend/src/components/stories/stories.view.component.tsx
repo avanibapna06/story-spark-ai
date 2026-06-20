@@ -5,6 +5,7 @@ import { getShortenedText, ITopicData, topicsData } from "./stories.utils";
 import toast, { Toaster } from "react-hot-toast";
 import { useCreatePostMutation } from "../../redux/apis/post.api";
 import jsPDF from "jspdf";
+import StoryTranslator from "../translate/StoryTranslator";
 
 export interface IStories {
   uuid: string;
@@ -38,6 +39,7 @@ const StoriesViewComponent: React.FC<StoriesComponentProps> = ({
   const [isCopied, setIsCopied] = useState<boolean>(false);
   const [characterProfiles, setCharacterProfiles] = useState<CharacterProfile[]>([]);
   const [profileLoading, setProfileLoading] = useState<boolean>(false);
+  const [showTranslator, setShowTranslator] = useState<boolean>(false);
   const [createPost] = useCreatePostMutation();
 
   useEffect(() => {
@@ -280,6 +282,13 @@ const handleGenerateCharacterProfile = async () => {
                     >
                       📄 Export PDF
                     </button>
+                    <button
+                      type="button"
+                      className="rounded-lg px-4 py-2 bg-emerald-700 text-white font-semibold cursor-pointer hover:bg-emerald-600 transition-colors"
+                      onClick={() => setShowTranslator(true)}
+                    >
+                      🌍 Translate
+                    </button>
                   </>
                 )}
                 <button
@@ -395,6 +404,14 @@ const handleGenerateCharacterProfile = async () => {
         </div>
       </div>
       <Toaster position="top-right" reverseOrder={false} />
+
+      {showTranslator && selectedStory && (
+        <StoryTranslator
+          story={selectedStory}
+          isLogin={isLogin}
+          onClose={() => setShowTranslator(false)}
+        />
+      )}
     </div>
   );
 };
