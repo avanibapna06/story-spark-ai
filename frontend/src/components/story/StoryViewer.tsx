@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Chapter } from "../../types/story.types";
 import ReadingTimeBadge from "../ReadingTimeBadge";
+import { NarrationControls } from "./NarrationControls";
 import toast from "react-hot-toast";
 
 interface Props {
@@ -86,7 +87,7 @@ const StoryViewer: React.FC<Props> = ({ chapters, storyId }) => {
       {showResumeBanner && (
         <div className="sticky top-0 z-20 bg-indigo-900/90 backdrop-blur-md rounded-lg p-3 mb-4 flex justify-between items-center">
           <span className="text-sm text-indigo-200">
-            You left off at {progress}% � continue where you stopped?
+            You left off at {progress}% – continue where you stopped?
           </span>
           <div className="flex gap-2">
             <button
@@ -120,9 +121,6 @@ const StoryViewer: React.FC<Props> = ({ chapters, storyId }) => {
               className="text-sm text-indigo-400 hover:text-indigo-300 transition-colors flex items-center gap-1 cursor-pointer"
               title="Share this story"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-              </svg>
               Share
             </button>
             <span className="text-sm font-medium text-indigo-400">
@@ -138,7 +136,12 @@ const StoryViewer: React.FC<Props> = ({ chapters, storyId }) => {
             <h1 className="text-4xl font-extrabold tracking-tight text-white mb-6">
               {chapter.title}
             </h1>
-            <ReadingTimeBadge text={chapter.content} />
+            
+            <div className="flex gap-4 items-center mb-4">
+              <ReadingTimeBadge text={chapter.content} />
+              <NarrationControls text={chapter.content} />
+            </div>
+
             <p className="text-lg text-zinc-300 whitespace-pre-line leading-9">
               {chapter.content}
             </p>
