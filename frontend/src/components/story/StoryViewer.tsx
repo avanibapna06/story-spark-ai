@@ -3,6 +3,7 @@ import { Chapter } from "../../types/story.types";
 import ReadingTimeBadge from "../ReadingTimeBadge";
 import { NarrationControls } from "./NarrationControls";
 import toast from "react-hot-toast";
+import { AudioPlayer } from "../AudioPlayer"; // Sahi import path
 
 interface Props {
   chapters: Chapter[];
@@ -129,7 +130,15 @@ const StoryViewer: React.FC<Props> = ({ chapters, storyId }) => {
           </div>
         </div>
       </div>
+  <span className="text-sm text-zinc-400">
+    Reading Progress
+  </span>
 
+  <span className="text-sm font-medium text-indigo-400">
+    {progress}%
+  </span>
+</div>
+      </div>
       <div className="max-w-4xl mx-auto">
         {chapters.map((chapter) => (
           <div key={chapter.id} className="mb-16">
